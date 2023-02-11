@@ -1,66 +1,59 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {
-Grid,
-Paper,
-Box,
-Typography
-} from '@mui/material';
-import { Link } from "react-router-dom";
-import { Button } from '@mui/material';
-import { ManageSearch } from '@mui/icons-material';
-import {useSelector, useDispatch} from "react-redux";
-import { appSelector, appActions } from '../../redux/appRedux';
-import Todo from '../../pages/todo/Todo'
+    MapContainer,
+    TileLayer,
+    Marker,
+    Popup,
+  } from 'react-leaflet'
+import { Map } from "leaflet";
+import "../../App.css"
+import api from "../../services/api";
+import { IconLocation } from "../../components/iconLocation";
 
 const Dashboard = () => {
-    const todo = useSelector (appSelector.todo)
-    const dispatch = useDispatch()
-    useEffect(()=>{
-        dispatch(appActions.setPageTitle('INICIO'))
-    },[])
+	const [places, setPlaces] = useState(null)
+	useEffect(()=>{
+		getPlaces();
+	}, [])
+	
 
-    return (
-        <Grid container spacing={3}>  
-            {/* ///tarjeta para mostrar elementos sin completar */}
-            <Grid item md={6} xs={12}>
-                <Paper sx={{p: 2}}>
-                    <Box>
-                        <Typography sx={{fontSize:18,fontWeight:700}}>{todo.filter((todo)=>!todo.completed).length} tareas restantes</Typography>
-                    </Box>
-                </Paper>
-            </Grid>
+	const getPlaces = async (url) => {
+		try {
+			const result = await api.GET(api.places)
+			if (result) {
+				console.log(result)
+				setPlaces(result.results)
+			}
+		} catch (error) {
+			console.log(error)
+		}
+		// const data = await fetch(`${BASE_URL}${QUERY}`, requestOptions)
+		// .then((response) => response.text())
+		// .then((result) => {
+		// 	console.log(JSON.parse(result));
+		// })
+		// .catch((err) => console.log("err: ", err));
+		
+	}
+ 
+	return (
+		<>
+	  <MapContainer center={[-29.412961805791436, -66.85614186519194]} zoom={13}>
+	    <TileLayer
+	      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+	      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+	    />
+		<Marker position={{lat:'-29.412961805791436', lng:'-66.85614186519194'}}/>
+	  </MapContainer>
 
-            {/* ///tarjeta para mostrar elementos completados */}
-            <Grid item md={6} xs={12}>
-                <Paper sx={{p: 2}}>
-                    <Box>
-                        <Typography sx={{fontSize:18,fontWeight:700}}>{todo.filter((todo)=>todo.completed).length} tareas completadas</Typography>
-                    </Box>
-                </Paper>
-            </Grid>
-
-
-            <Grid item md={6} xs={12}>
-                <Paper sx={{p: 2}}>
-                    <Box>
-                        <Button component={Link} to="/todo">
-                        <ManageSearch/>
-                        ToDo
-                        </Button>
-                    </Box>
-                </Paper>
-            </Grid>
-            <Grid item md={6} xs={12}>
-                <Paper sx={{p: 2}}>
-                    <Box>
-                        <Button component={Link} to="/fetch-list">
-                        <ManageSearch/>
-                        Pokemons
-                    </Button>
-                    </Box>
-                </Paper>
-            </Grid>
-        </Grid>
-    );
+	  {/* {places.map(place => {
+		<Marker
+		key={place.id}
+		position={[place.coordinates.latitude, place.coordinates.longitude]}
+		/>
+	  })} */}
+	  </>
+	);
 };
+
 export default Dashboard;

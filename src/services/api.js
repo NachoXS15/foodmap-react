@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "https://pokeapi.co/api/v2";
+const BASE_URL = "http://localhost:3001";
+
 export const IMG_URL = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/";
 
 
@@ -62,7 +63,7 @@ export default {
     GET,
     PATCH,
     DELETE,
-    pokemons:`${BASE_URL}/pokemon`
+    places:`${BASE_URL}/places`
 } 
 
     
